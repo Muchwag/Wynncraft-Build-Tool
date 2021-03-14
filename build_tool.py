@@ -7,6 +7,7 @@ with open('ItemDict1.20.txt') as ItemDict:
     ItemDict.close()
 
 
+
 class Build:
     def __init__(self, input_build): 
         self.input = input_build.lower().split(', ')
