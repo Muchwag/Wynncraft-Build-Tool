@@ -30,7 +30,7 @@ class Build:
     def __str__(self):
         gear_index = ["Helmet", "Chestplate", "Leggings",
                       "Boots", "Ring", "Ring2", "Bracelet", "Necklace", "Weapon"]
-        output = "----Items----\n"
+        output = "----ITEMS----\n"
         for gear_type, item in self.build_data.items():
             item_powders = " "
             for p in item.item_json["powders"]:
@@ -38,6 +38,10 @@ class Build:
             gear_index[gear_index.index(gear_type)] = item.item_json["name"] + item_powders
         for item in gear_index:
             output += item + "\n"
+        output += "----STATS----\n"
+        for attr, value in self.build_stats.items():
+            if value != 0:
+                output += f'{attr}: {value}\n'
         return output
 
     def add_item(self, item):
