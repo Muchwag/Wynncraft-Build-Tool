@@ -1,5 +1,6 @@
 import copy
 import json
+from itertools import permutations, combinations
 
 types = ["Helmet", "Chestplate", "Leggings", "Boots", "Weapon"]
 weapons = ['Dagger', 'Bow', 'Spear', 'Relik', 'Wand']
@@ -14,6 +15,8 @@ identifications = [
     'damage', 'earthDamage', 'thunderDamage', 'waterDamage', 'fireDamage', 'airDamage',
     'attackSpeed', 'attackSpeedBonus', 'poison'
 ]
+skill_req = ['strength', 'dexterity', 'intelligence', 'defense', 'agility']
+skill_bonus = ['strengthPoints', 'dexterityPoints', 'intelligencePoints', 'defensePoints', 'agilityPoints']
 element_short = {"e": "earth", "t": "thunder", "w": "water", "f": "fire", "a": "air"}
 
 with open('powder_values.json', "r") as powder_file:
@@ -81,13 +84,128 @@ class Build:
                     self.build_stats[identification] += item.to_json()[identification]
 
         # print(self.build_stats)
+    @staticmethod
+    def test_order_gen(items):
+        poss_item_combos = list(permutations(items, 2))
+        required_sp = [ Build.calc_build_sp(combo) for combo in poss_item_combos]
+        print(required_sp)
+
+    def equip_build(self, gear_set, total_req):
+        best_set_stats = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, "total": 0}
+        for test_set in permutations(gear_set, len(gear_set)):
+            possible = True
+            points = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, "total": 0}
+            assigned = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
+            req = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
+
+            for item in test_set:
+                for attr in skill_req:
+
+                    if item[attr] > points[attr]:
+                        points["total"] += item[attr] - points[attr]
+                        assigned[attr] += item[attr] - points[attr]
+                        points[attr] += item[attr] - points[attr]
+
+                    if item[attr] > req[attr]: # updates the total reqs of the build
+                        req[attr] = item[attr]
+                    points[attr] += item[attr + "Points"] # adds item skill point bonuses
+
+                    for attr in skill_req: # checks if any items would pop
+                        if req[attr] > points[attr] and req[attr] > 0:
+                            points["total"] += req[attr] - points[attr]
+                            assigned[attr] += req[attr] - points[attr]
+                            points[attr] = req[attr]
+
+            for attr in skill_req:
+                if total_req[attr] > points[attr] and total_req[attr] != 0:
+                    points["total"] += total_req[attr] - points[attr]
+                    assigned[attr] += total_req[attr] - points[attr]
+                points[attr] = total_req[attr]    
+        
+            # Seeing if build is possible
+            for attr in skill_req:
+                if assigned[attr] > 100:
+                    possible = False
+                    break
+            # checking if current set better than old best
+            if points["total"] > best_set_stats["total"] and self.remaining_sp - points["total"] >= 0 and possible == True:
+                best_set_stats = points.copy()
+            
+        return best_set_stats
+        
+    def calc_equip(self):
+
+        total_req = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
+        gear_set = []
+        for category, item in self.build_data.items():
+            item_json = item.to_json()
+            for skill in skill_req:
+                if item_json[skill] > total_req[skill]:
+                    total_req[skill] = item_json[skill]
+            for skill in skill_req:
+                if item_json[skill + "Points"] != 0 and category != "Weapon":
+                    gear_set.append(item_json)
+                    break
+        print(self.equip_build(gear_set, total_req))
+
+
+    @staticmethod
+    def calc_build_sp(item_list_ordered):
+        build_skill_reqs = {}
+        build_skill_bonuses = {}
+        for item in item_list_ordered:
+            print("Doing item:" ,item)
+            item_json = item.to_json()
+            for skill in skill_req:
+                skill_bonus_str = skill + "Points"
+                skill_bonus_amnt = item_json[skill_bonus_str]
+                item_req = item_json[skill]
+                
+                #print("req",item_req,"skillbonusamont",skill_bonus_amnt)
+                if skill not in build_skill_reqs: # set default value to 0
+                    build_skill_reqs[skill] = 0
+                if skill_bonus_str not in build_skill_bonuses: # set default value to 0
+                    build_skill_bonuses[skill_bonus_str] = 0
+                build_skill_bonus = build_skill_bonuses[skill_bonus_str]
+                build_skill_req = build_skill_reqs[skill]
+                if build_skill_req + build_skill_bonus < item_req: # if item's req is greater than current req + sp bonus, add it
+                    build_skill_reqs[skill] = item_req - build_skill_bonus
+                    build_skill_bonuses[skill_bonus_str] += skill_bonus_amnt
+                #print("bonuses",build_skill_bonuses,"reqs",build_skill_reqs)
+        
+        return list(build_skill_reqs.values())
+
+    #     def generate_build_order(self):
+    #         item_list = []
+    #         for category, item in self.build_data.items():
+    #             item_json = item.to_json
+    #             if category == "Weapon":
+    #                 weapon = item.to_json()
+    #                 for skill in skill_bonus: # Removes sp bonus from weapon
+    #                     weapon[skill] = 0
+    #                 pass
+    #             for attr in skill_reqs:
+    #                 if item_json[attr] != 0:
+    #                     item_list.append(item_json)
+    #                     break
+    #                 for attr in skill_bonus:
+    #                     if item_json[attr] != 0:
+    #                         item_list.append(item_json)
+    #                     break
+
+    #         for current_set in itertools.permutations(item_list, len(item_list)).shuffle():
+    #             current_set.append(weapon)
+    #             Build.calc_build_sp(current_set)
+        
+
 
 
 class Item:
     def __init__(self, itemjson):
         self.item_json = itemjson
         self.item_json["powders"] = []
-        pass
+    def __str__(self):
+        return self.item_json["name"]
 
     def add_lists(self, list1, list2):  # creates new list
         return [x + y for x, y in zip(list1, list2)]
@@ -125,3 +243,4 @@ class Item:
 
     def to_json(self):
         return self.item_json
+

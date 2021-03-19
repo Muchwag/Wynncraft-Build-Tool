@@ -3,6 +3,7 @@ import json
 import math
 from itemdb import ItemDB
 from build import Build
+from build import Item
 
 itemdb = ItemDB()
 
@@ -24,10 +25,8 @@ def get_items():
 itemdb.add_json(get_items())
 epic = Build()
 epic.add_item(itemdb.get_item("Chakram"))
-#epic.add_item(itemdb.get_item("Moon Pool Circlet"))
-#epic.add_item(itemdb.get_item("Stratus"))
-#epic.set_weapon_powders(["e6","e6", "t6"])
-#epic.remove_item("Ring2")
-#print(itemdb.get_item("Chakram"))
-print(str(epic.build_stats))
+epic.add_item(itemdb.get_item("Donner"))
+Build.test_order_gen([Item(itemdb.get_item("Moon Pool Circlet")),
+ Item(itemdb.get_item("Brainwash"))])
 #print("damages calculation: " + str(epic.get_powdered_dmg()))
+epic.calc_equip()
