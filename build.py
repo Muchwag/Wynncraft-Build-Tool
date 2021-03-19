@@ -151,27 +151,28 @@ class Build:
 
     @staticmethod
     def calc_build_sp(item_list_ordered):
-        build_skill_reqs = {}
-        build_skill_bonuses = {}
+        build_skill_reqs = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
+        build_skill_bonuses = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
         for item in item_list_ordered:
             print("Doing item:" ,item)
             item_json = item.to_json()
             for skill in skill_req:
-                skill_bonus_str = skill + "Points"
-                skill_bonus_amnt = item_json[skill_bonus_str]
+                skill_bonus_amnt = item_json[skill + "Points"]
+                build_skill_bonus = build_skill_bonuses[skill]
                 item_req = item_json[skill]
-                
-                #print("req",item_req,"skillbonusamont",skill_bonus_amnt)
-                if skill not in build_skill_reqs: # set default value to 0
-                    build_skill_reqs[skill] = 0
-                if skill_bonus_str not in build_skill_bonuses: # set default value to 0
-                    build_skill_bonuses[skill_bonus_str] = 0
-                build_skill_bonus = build_skill_bonuses[skill_bonus_str]
+                print("req",item_req)
+
                 build_skill_req = build_skill_reqs[skill]
                 if build_skill_req + build_skill_bonus < item_req: # if item's req is greater than current req + sp bonus, add it
                     build_skill_reqs[skill] = item_req - build_skill_bonus
-                    build_skill_bonuses[skill_bonus_str] += skill_bonus_amnt
-                #print("bonuses",build_skill_bonuses,"reqs",build_skill_reqs)
+                print("bonuses",build_skill_bonuses,"reqs",build_skill_reqs)
+            for skill in skill_req:
+                skill_bonus_amnt = item_json[skill + "Points"]
+                build_skill_bonus = build_skill_bonuses[skill]
+                print("skillbonusamont",skill_bonus_amnt)
+                build_skill_bonuses[skill] += skill_bonus_amnt
+
+
         
         return list(build_skill_reqs.values())
 

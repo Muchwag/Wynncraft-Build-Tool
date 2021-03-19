@@ -24,8 +24,8 @@ def get_items():
 
 itemdb.add_json(get_items())
 epic = Build()
-epic.add_item(itemdb.get_item("Chakram"))
-epic.add_item(itemdb.get_item("Donner"))
+#epic.add_item(itemdb.get_item("Chakram"))
+#epic.add_item(itemdb.get_item("Donner"))
 Build.test_order_gen([Item(itemdb.get_item("Moon Pool Circlet")),
  Item(itemdb.get_item("Brainwash"))])
 #print("damages calculation: " + str(epic.get_powdered_dmg()))
