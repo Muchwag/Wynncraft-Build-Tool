@@ -85,12 +85,11 @@ class Build:
 
         # print(self.build_stats)
 
-    def equip_build(self, gear_set, total_req):
-        best_set_stats = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, "total": 201}
-        best_assigned = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, "total": 0}
+    def equip_build(self, gear_set, total_req, starting_sp):
+        best_set_stats = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, 'assigned': 99999}
         for test_set in permutations(gear_set, len(gear_set)):
             possible = True
-            points = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, "total": 0}
+            points = starting_sp
             assigned = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
             req = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
 
@@ -98,7 +97,6 @@ class Build:
                 for attr in skill_req:
 
                     if item[attr] > points[attr]:
-                        points["total"] += item[attr] - points[attr]
                         assigned[attr] += item[attr] - points[attr]
                         points[attr] += item[attr] - points[attr]
 
@@ -107,15 +105,19 @@ class Build:
                         
                     points[attr] += item[attr + "Points"] # adds item skill point bonuses
 
-                    for attr in skill_req: # checks if any items would pop
-                        if req[attr] > points[attr] and req[attr] > 0:
-                            points["total"] += req[attr] - points[attr]
-                            assigned[attr] += req[attr] - points[attr]
-                            points[attr] = req[attr]
+
+                    # for attr in skill_req: # checks if any items would pop
+
+                    #     if req[attr] > points[attr] and req[attr] > 0:
+                    #         #points["total"] += req[attr] - points[attr]
+                    #         assigned[attr] += req[attr] - points[attr]
+                    #         points[attr] = req[attr]
+                    if req[attr] > points[attr] and req[attr] > 0:
+                        assigned[attr] += req[attr] - points[attr]
+                        points[attr] = req[attr]
 
             for attr in skill_req:
                 if total_req[attr] > points[attr] and total_req[attr] != 0:
-                    points["total"] += total_req[attr] - points[attr]
                     assigned[attr] += total_req[attr] - points[attr]
                     points[attr] = total_req[attr]
 
@@ -125,30 +127,63 @@ class Build:
                     possible = False
                     break
             # checking if current set better than old best
-            if points["total"] < best_set_stats["total"] and self.remaining_sp - points["total"] >= 0 and possible == True:
-                best_set_stats = points.copy()
-                best_assigned = assigned.copy()
-
-        #print(best_assigned)
+            points_sum = sum(assigned.values())
+            if points_sum < best_set_stats["assigned"] and self.remaining_sp - points_sum >= 0 and possible == True:
+                points['assigned'] = points_sum
+                best_set_stats = points.copy()    
+        
+        
+        # weapon_json = self.build_data["Weapon"].to_json() # Add weapons sp to the final value
+        # for skill in skill_req:
+        #     best_set_stats[skill] += weapon_json[skill + "Points"]
+            
         return best_set_stats
         
     
     def calc_equip(self):
-
+        
         total_req = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
+        starting_sp = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0}
         gear_set = []
+        total_sp_bonus = self.remaining_sp
+
         for category, item in self.build_data.items():
+            not_pos_sp_reqless = False
             item_json = item.to_json()
+
             for skill in skill_req:
                 if item_json[skill] > total_req[skill]:
                     total_req[skill] = item_json[skill]
-            for skill in skill_req:
+
                 if item_json[skill + "Points"] != 0 and category != "Weapon":
-                    gear_set.append(item_json)
-                    break
-        #print(self.equip_build(gear_set, total_req))
+                    total_sp_bonus += min(item_json[skill + "Points"], 0)
+                    not_pos_sp_reqless = True
+            
+            if not_pos_sp_reqless: # checks if the item is reqless and only positive sp
+                not_pos_sp_reqless = False #  first set it to be like vaward
+                for skill in skill_req:
+                    if item_json[skill] != 0 or item_json[skill + "Points"] < 0: # if it finds a req or -sp, then it will stop the loop
+                        print("marking",item_json["name"],"as not positive sp reqless")
+            
+                        not_pos_sp_reqless = True
+                        break
+                        
+            if not_pos_sp_reqless:
+                print("adding",item_json["name"],"as item with sp and req")
+                gear_set.append(item_json)
+            elif category != "Weapon":
+                print("adding",item_json["name"],"as item with no req no -sp")
+                for skill in skill_req:
+                    starting_sp[skill] += item_json[skill + "Points"]
+            
 
-
+        if total_sp_bonus < sum(total_req.values()):
+            pass
+            # RETURN IMPOSSIBLE BUILD
+        #print(gear_set)
+        #print(total_req)
+        #print(starting_sp)
+        return self.equip_build(gear_set, total_req, starting_sp)
 
 
 class Item:

@@ -25,18 +25,12 @@ def get_items():
 
 itemdb.add_json(get_items())
 epic = Build()
-epic.add_item(itemdb.get_item("Moon Pool Circlet"))
-epic.add_item(itemdb.get_item("Aquarius"))
-epic.add_item(itemdb.get_item("Seipodon"))
-epic.add_item(itemdb.get_item("Capricorn"))
-epic.add_item(itemdb.get_item("Gold Hydro Bracelet"))
-epic.add_item(itemdb.get_item("Diamond Hydro Necklace"))
-epic.add_item(itemdb.get_item("Third Eye"))
-epic.add_item(itemdb.get_random_item())
+epic.add_item(itemdb.get_item("Chakram"))
+epic.add_item(itemdb.get_item("Ghost"))
+#epic.add_item(itemdb.get_item("Vaward"))
 
-# Item(itemdb.get_item("Brainwash"))])
-#print("damages calculation: " + str(epic.get_powdered_dmg()))
-epic.calc_equip()
+
+print(epic.calc_equip())
 
 setupStr = """
 import requests 
@@ -75,5 +69,6 @@ epic.add_item(itemdb.get_item("Diamond Hydro Necklace"))
 epic.add_item(itemdb.get_item("Third Eye"))
 epic.calc_equip()
 """
-num = 1000
-print("time taken",timeit.timeit(stmt=runStr, setup=setupStr, number=num) / num) 
+
+num = 100
+#print("time taken",timeit.timeit(stmt=runStr, setup=setupStr, number=num) / num) 
