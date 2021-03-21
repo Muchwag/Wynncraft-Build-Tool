@@ -1,5 +1,6 @@
 import json
 import math
+import random
 
 weapons = ['Dagger', 'Bow', 'Spear', 'Relik', 'Wand']
 armor = [ "Helmet", "Chestplate", "Leggings", "Boots"]
@@ -66,5 +67,8 @@ class ItemDB:
             
     def get_item(self, name):
         return self.all_items[name]
+
+    def get_random_item(self):
+        return random.choice(list(self.all_items.values()))
     
         
