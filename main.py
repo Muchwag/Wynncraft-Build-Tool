@@ -25,12 +25,12 @@ def get_items():
 
 itemdb.add_json(get_items())
 epic = Build()
-epic.add_item(itemdb.get_item("Chakram"))
-epic.add_item(itemdb.get_item("Ghost"))
+#epic.add_item(itemdb.get_item("Donner"))
+epic.add_item(itemdb.get_item("Birch Wood Dagger"))
 #epic.add_item(itemdb.get_item("Vaward"))
 
-
-print(epic.calc_equip())
+#print(epic.calc_equip())
+print("dps calculated",epic.calc_rough_dps())
 
 setupStr = """
 import requests 

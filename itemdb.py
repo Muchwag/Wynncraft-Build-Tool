@@ -5,8 +5,8 @@ import random
 weapons = ['Dagger', 'Bow', 'Spear', 'Relik', 'Wand']
 armor = [ "Helmet", "Chestplate", "Leggings", "Boots"]
 base_damages = ['damage', 'earthDamage', 'thunderDamage', 'waterDamage', 'fireDamage', 'airDamage']
-attack_speed_mod = {'SUPER_FAST': 4.3, 'VERY_FAST': 3.1, 'FAST': 2.5, 'NORMAL': 2.05, 'SLOW': 1.5, 'VERY_SLOW': 0.83,
-                  'SUPER_SLOW': 0.51}
+attack_speed_mod = {'SUPER_FAST': 6, 'VERY_FAST': 5, 'FAST': 4, 'NORMAL': 3, 'SLOW': 2, 'VERY_SLOW': 1,
+                  'SUPER_SLOW': 0}
 rollable_IDs = ['healthRegen', 'manaRegen', 'spellDamage', 'damageBonus', 'lifeSteal', 'manaSteal', 'xpBonus',
                      'lootBonus', 'reflection', 'thorns', 'exploding', 'speed', 'attackSpeedBonus', 'poison', 'healthBonus',
                      'soulPoints', 'emeraldStealing', 'healthRegenRaw', 'spellDamageRaw', 'damageBonusRaw',
