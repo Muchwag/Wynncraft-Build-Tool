@@ -7,9 +7,9 @@ armor = [ "Helmet", "Chestplate", "Leggings", "Boots"]
 base_damages = ['damage', 'earthDamage', 'thunderDamage', 'waterDamage', 'fireDamage', 'airDamage']
 attack_speed_mod = {'SUPER_FAST': 6, 'VERY_FAST': 5, 'FAST': 4, 'NORMAL': 3, 'SLOW': 2, 'VERY_SLOW': 1,
                   'SUPER_SLOW': 0}
-rollable_IDs = ['healthRegen', 'manaRegen', 'spellDamage', 'damageBonus', 'lifeSteal', 'manaSteal', 'xpBonus',
+rollable_IDs = ['healthRegen', 'manaRegen', 'spellDamage', 'lifeSteal', 'manaSteal', 'xpBonus',
                      'lootBonus', 'reflection', 'thorns', 'exploding', 'speed', 'attackSpeedBonus', 'poison', 'healthBonus',
-                     'soulPoints', 'emeraldStealing', 'healthRegenRaw', 'spellDamageRaw', 'damageBonusRaw',
+                     'soulPoints', 'emeraldStealing', 'healthRegenRaw', 'spellDamageRaw', 'damageBonusRaw', 'damageBonus',
                      'bonusFireDamage', 'bonusWaterDamage', 'bonusAirDamage', 'bonusThunderDamage', 'bonusEarthDamage', 
                      'bonusFireDefense', 'bonusWaterDefense', 'bonusAirDefense', 'bonusThunderDefense', 'bonusEarthDefense',
                      'spellCostPct1', 'spellCostRaw1', 'spellCostPct2',
@@ -37,7 +37,7 @@ class ItemDB:
         except:
             pass
         
-        if 'identified' in jsonObj: # on items without fixed IDs turns base ID to max ID
+        if 'identified' not in jsonObj: # on items without fixed IDs turns base ID to max ID
             for attr in rollable_IDs:
                 try:
                     if int(jsonObj[attr]) > 0:

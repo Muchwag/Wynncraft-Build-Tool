@@ -24,10 +24,11 @@ def get_items():
     
 
 itemdb.add_json(get_items())
+#print(itemdb.get_item("Thrunda Ripsaw"))
 epic = Build()
 #epic.add_item(itemdb.get_item("Donner"))
-epic.add_item(itemdb.get_item("Birch Wood Dagger"))
-#epic.add_item(itemdb.get_item("Vaward"))
+epic.add_item(itemdb.get_item("Freedom"))
+epic.add_item(itemdb.get_item("Vaward"))
 
 #print(epic.calc_equip())
 print("dps calculated",epic.calc_rough_dps())

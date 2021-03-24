@@ -85,21 +85,25 @@ class Build:
             sp_bonuses[skill] = assigned
             
         total_melee_dps = 0
+        total_melee_hit = 0
         for dmg_type, dmg_amount in weap_damage.items(): 
-            if dmg_type == "damage":
+            if dmg_type == "damage": # neutral damage;
                 multiplier = (1 + sp_bonuses[stats["dexterity"]]) + sp_bonuses[stats["strength"]] + (stats["damageBonus"] / 100)
-                total_melee_dps += dmg_amount[1] * multiplier * melee_speed_mod + (stats["damageBonusRaw"] + (stats["poison"] / 3))
-            else:
+                total_melee_hit += dmg_amount[1] * multiplier + (stats["damageBonusRaw"] + max(stats["poison"] / 3, 0))
+                total_melee_dps += (dmg_amount[1] * multiplier + (stats["damageBonusRaw"] + max(stats["poison"] / 3, 0))) * melee_speed_mod
+            else: # elemental damage
                 sp_name = damagetype_to_sp[dmg_type]
-                multiplier = (1 + sp_bonuses[stats["dexterity"]] + sp_bonuses[stats["strength"]] + 
-                    (stats["damageBonus"] + stats[sp_name] +
-                     sp_bonuses[sp_name])/100 )
-                total_melee_dps += dmg_amount[1] * multiplier * melee_speed_mod 
-                print(sp_name, multiplier)
+                sp_assigned = stats[sp_name + "Assigned"]
+                multiplier = (1 + sp_bonuses[stats["dexterityAssigned"]] + sp_bonuses[stats["strengthAssigned"]] + 
+                    + sp_bonuses[sp_assigned] + (stats["damageBonus"] + stats["bonus" + dmg_type.capitalize() + "Damage"])/100 )
+                
+                total_melee_hit += dmg_amount[1] * multiplier
+                total_melee_dps += dmg_amount[1] * multiplier * melee_speed_mod
+                print(sp_name, multiplier, "dex boost amount", ( sp_assigned ))
+        # print("Melee Hit:", total_melee_hit)
         # Melee dps = (base_dmg) * (str_bonus + melee_dmg% + ele% + sp_bonus%) * (speed_mod )
         # neutral = (base_dmg) * (str_bonus + melee_dmg%) * (speed_mod) + (raw melee) + max((poison / 3), 0)
 
-        print(spell_speed_mod, melee_speed_mod)
 
         return total_melee_dps
 
@@ -126,6 +130,8 @@ class Build:
 
                 if build_stats[skill] < item_json[skill]:
                     build_stats[skill] = item_json[skill]
+                build_stats[skill + "Assigned"] = constrict(  build_stats[skill] + build_stats[skill + "Points"], 0, 150)
+
         return build_stats, weap_damage
 
         # print(self.build_stats)
