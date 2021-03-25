@@ -5,35 +5,15 @@
             "cost": 6,
             "parts": [
                 {
-                    "subtitle": "First Pulse",
                     "type": "heal",
-                    "strength": 0.12
-                },
-                {
-                    "subtitle": "Second and Third Pulses",
-                    "type": "heal",
-                    "strength": 0.06
-                },
-                {
-                    "subtitle": "Total Heal",
-                    "type": "heal",
-                    "strength": 0.24,
-                    "summary": true
-                },
-                {
-                    "subtitle": "First Pulse (Ally)",
-                    "type": "heal",
-                    "strength": 0.2
-                },
-                {
-                    "subtitle": "Second and Third Pulses (Ally)",
-                    "type": "heal",
-                    "strength": 0.1
-                },
-                {
-                    "subtitle": "Total Heal (Ally)",
-                    "type": "heal",
-                    "strength": 0.4
+                    "multiplier": 0.24,
+                    "conversion": {
+                        "earth": 0,
+                        "thunder": 0,
+                        "water": 0,
+                        "fire": 0,
+                        "air": 0,
+                    }
                 }
             ]
         },
@@ -42,13 +22,11 @@
             "cost": 4,
             "parts": [
                 {
-                    "subtitle": "Total Damage",
                     "type": "damage",
                     "multiplier": 100,
                     "conversion": {
                         "thunder": 60
                     },
-                    "summary": true
                 }
             ]
         },

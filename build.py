@@ -1,6 +1,8 @@
 import copy
 import json
 from itertools import permutations, combinations
+from collections import OrderedDict
+from math import floor
 
 types = ["Helmet", "Chestplate", "Leggings", "Boots", "Weapon"]
 weapons = ['Dagger', 'Bow', 'Spear', 'Relik', 'Wand']
@@ -91,6 +93,7 @@ class Build:
                 multiplier = (1 + sp_bonuses[stats["dexterity"]]) + sp_bonuses[stats["strength"]] + (stats["damageBonus"] / 100)
                 total_melee_hit += dmg_amount[1] * multiplier + (stats["damageBonusRaw"] + max(stats["poison"] / 3, 0))
                 total_melee_dps += (dmg_amount[1] * multiplier + (stats["damageBonusRaw"] + max(stats["poison"] / 3, 0))) * melee_speed_mod
+
             else: # elemental damage
                 sp_name = damagetype_to_sp[dmg_type]
                 sp_assigned = stats[sp_name + "Assigned"]
@@ -100,6 +103,18 @@ class Build:
                 total_melee_hit += dmg_amount[1] * multiplier
                 total_melee_dps += dmg_amount[1] * multiplier * melee_speed_mod
                 print(sp_name, multiplier, "dex boost amount", ( sp_assigned ))
+        
+        for i in range(4):
+            if "multiplier" in spell_values[self.build_data["Weapon"]["type"].lower()][0]["parts"]:
+                spell_mult = spell_values[self.build_data["Weapon"]["type"].lower()][0]["parts"]["multiplier"]
+            else:
+                pass      
+
+        for dmg_type, dmg_amount in weap_damage.items():
+            pass
+            
+        
+
         # print("Melee Hit:", total_melee_hit)
         # Melee dps = (base_dmg) * (str_bonus + melee_dmg% + ele% + sp_bonus%) * (speed_mod )
         # neutral = (base_dmg) * (str_bonus + melee_dmg%) * (speed_mod) + (raw melee) + max((poison / 3), 0)
@@ -255,6 +270,12 @@ class Item:
 
     def add_lists(self, list1, list2):  # creates new list
         return [x + y for x, y in zip(list1, list2)]
+    def multi_list_by_const(self, list1, const):
+        return [x * const for x in list1]
+    def floor_recalculate_avg(self, damages):
+        a = floor(damages[0])
+        b = floor(damages[2])
+        return [a, (a+b)/2, b ]
 
     def set_powders(self, powder_list):  # set powder like ["w6", "w6"]
         if len(powder_list) > self.item_json['sockets']:  # Checks if amount of powders is more than supported on item
@@ -264,7 +285,7 @@ class Item:
         else:
             self.item_json["powders"] = powder_list  # If amount <= than supported on item, just applies adds them on
 
-    def calc_powdered_dmg(self, conversion_values={}):
+    def calc_powdered_dmg(self, conversion_values=OrderedDict()):
         if self.item_json["equipType"] == "Weapon":
             weapon_dmgs = copy.deepcopy(self.item_json["damages"])
             for powder in self.item_json["powders"]:
@@ -283,6 +304,13 @@ class Item:
                 else:  # if not, its regular
                     conversion_values[element] += conversion
                 weapon_dmgs[element] = self.add_lists(base, weapon_dmgs[element])
+            for convert_element, convert_value in conversion_values.items(): # use the calculated conversion values and update neutral and the element
+                convert_damage = self.multi_list_by_const(weapon_dmgs["damage"], convert_value)
+                new_neutral =   self.multi_list_by_const(weapon_dmgs["damage"], 1 - convert_value)
+                weapon_dmgs[convert_element] = self.add_lists(weapon_dmgs[convert_element], convert_damage)
+                weapon_dmgs["damage"] = new_neutral
+            # for dmg, dmg_list in weapon_dmgs.items(): # floor all values and recalculate the average
+            #     weapon_dmgs[dmg] = self.floor_recalculate_avg(dmg_list)
             return weapon_dmgs, conversion_values
         else:
             raise SyntaxError("tried to calculate powdered damage on armor piece")

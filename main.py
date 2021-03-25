@@ -21,17 +21,19 @@ def get_items():
     with open('item_file.json', "w") as item_file:
         json.dump(item_list, item_file)
     return item_list
-    
+
 
 itemdb.add_json(get_items())
 #print(itemdb.get_item("Thrunda Ripsaw"))
 epic = Build()
 #epic.add_item(itemdb.get_item("Donner"))
-epic.add_item(itemdb.get_item("Freedom"))
-epic.add_item(itemdb.get_item("Vaward"))
+epic.add_item(itemdb.get_item("Chakram"))
+epic.set_weapon_powders(["w6","w6"])
+print(epic.get_powdered_dmg())
 
-#print(epic.calc_equip())
-print("dps calculated",epic.calc_rough_dps())
+
+# #print(epic.calc_equip())
+# print("dps calculated",epic.calc_rough_dps())
 
 setupStr = """
 import requests 
