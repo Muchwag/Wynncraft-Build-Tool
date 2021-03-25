@@ -3,16 +3,18 @@
         {
             "title": "Heal",
             "cost": 6,
+            "damageType": "HEAL",
             "parts": [
                 {
                     "type": "heal",
                     "multiplier": 0.24,
+                    "ignore": false,
                     "conversion": {
                         "earth": 0,
                         "thunder": 0,
                         "water": 0,
                         "fire": 0,
-                        "air": 0,
+                        "air": 0
                     }
                 }
             ]
@@ -20,87 +22,118 @@
         {
             "title": "Teleport",
             "cost": 4,
+            "damageType": "NORMAL",
             "parts": [
                 {
                     "type": "damage",
                     "multiplier": 100,
+                    "ignore": false,
                     "conversion": {
-                        "thunder": 60
-                    },
+                        "earth": 0,
+                        "thunder": 60,
+                        "water": 0,
+                        "fire": 0,
+                        "air": 0
+                    }
                 }
             ]
         },
         {
             "title": "Meteor",
             "cost": 8,
-            "parts": [
-                {
-                    "subtitle": "Blast Damage",
-                    "type": "damage",
-                    "multiplier": 500,
-                    "conversion": {
-                        "earth": 30,
-                        "fire": 30
-                    },
-                    "summary": true
-                },
-                {
-                    "subtitle": "Burn Damage",
-                    "type": "damage",
-                    "multiplier": 125,
-                    "conversion": {}
+            "damageType": "NORMAL",
+            "variants": {
+                "DEFAULT": {
+                    "parts": [
+                        {
+                            "subtitle": "Blast Damage",
+                            "type": "damage",
+                            "multiplier": 500,
+                            "ignore": false,
+                            "conversion": {
+                                "earth": 30,
+                                "thunder": 0,
+                                "water": 0,
+                                "fire": 30,
+                                "air": 0
+                            }
+                        },
+                        {
+                            "subtitle": "Burn Damage",
+                            "damageType": "damage",
+                            "multiplier": 125,
+                            "ignore": true,
+                            "conversion": {
+                                "earth": 30,
+                                "thunder": 0,
+                                "water": 0,
+                                "fire": 30,
+                                "air": 0}
+                        }
+                    ]
                 }
-            ]
+            }
         },
         {
             "title": "Ice Snake",
+            "damageType": "NORMAL",
             "cost": 4,
-            "parts": [
-                {
-                    "subtitle": "Total Damage",
-                    "type": "damage",
-                    "multiplier": 70,
-                    "conversion": {
-                        "water": 50
-                    },
-                    "summary": true
-                }
-            ]
+            "variants": {
+                "parts": [
+                    {
+                        "subtitle": "Total Damage",
+                        "type": "damage",
+                        "multiplier": 70,
+                        "ignore": false,
+                        "conversion": {
+                            "earth": 0,
+                            "thunder": 0,
+                            "water": 50,
+                            "fire": 0,
+                            "air": 0},
+                    }
+                ]
+            }
         }
     ],
     "spear": [
         {
             "title": "Bash",
+            "damageType": "NORMAL",
             "cost": 6,
-            "parts": [
-                {
-                    "subtitle": "First Damage",
-                    "type": "damage",
-                    "multiplier": 130,
-                    "conversion": {
-                        "earth": 40
+            "variants": {
+                    "parts": [
+                    {
+                        "subtitle": "First Damage",
+                        "type": "damage",
+                        "multiplier": 130,
+                        "ignore": false,
+                        "conversion": {
+                            "earth": 40,
+                            "thunder": 0,
+                            "water": 0,
+                            "fire": 0,
+                            "air": 0}
+                    },
+                    {
+                        "subtitle": "Explosion Damage",
+                        "type": "damage",
+                        "multiplier": 130,
+                        "ignore": false,
+                        "conversion": {
+                            "earth": 0,
+                            "thunder": 0,
+                            "water": 0,
+                            "fire": 0,
+                            "air": 0}
                     }
-                },
-                {
-                    "subtitle": "Explosion Damage",
-                    "type": "damage",
-                    "multiplier": 130,
-                    "conversion": {}
-                },
-                {
-                    "subtitle": "Total Damage",
-                    "type": "total",
-                    "factors": [
-                        1,
-                        1
-                    ],
-                    "summary": true
-                }
-            ]
+                ]
+            }
         },
         {
             "title": "Charge",
             "cost": 4,
+            "damageType": "NORMAL",
             "variants": {
                 "DEFAULT": [
                     {
