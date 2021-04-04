@@ -2,7 +2,8 @@ import copy
 import json
 from itertools import permutations, combinations
 from collections import OrderedDict
-from math import floor
+from math import floor, ceil
+import build_types
 
 types = ["Helmet", "Chestplate", "Leggings", "Boots", "Weapon"]
 weapons = ['Dagger', 'Bow', 'Spear', 'Relik', 'Wand']
@@ -23,20 +24,32 @@ skill_req = ['strength', 'dexterity', 'intelligence', 'defense', 'agility']
 skill_bonus = ['strengthPoints', 'dexterityPoints', 'intelligencePoints', 'defensePoints', 'agilityPoints']
 element_short = {"e": "earth", "t": "thunder", "w": "water", "f": "fire", "a": "air"}
 damagetype_to_sp = {"earth": "strength", "thunder": "dexterity", "water": "intelligence", "fire": "defense", "air": "agility"}
+sp_bonuses = {0: 0.0, 1: 0.01, 2: 0.02, 3: 0.029, 4: 0.039, 5: 0.049, 6: 0.058, 7: 0.067, 8: 0.077, 9: 0.086, 10: 0.095, 11: 0.104, 12: 0.113, 13: 0.122, 14: 0.131, 15: 0.139, 16: 0.148, 17: 0.157, 18: 0.165, 19: 0.173, 20: 0.182, 21: 0.19, 22: 0.198, 23: 0.206, 24: 0.214, 25: 0.222, 26: 0.23, 27: 0.238, 28: 0.246, 29: 0.253, 30: 0.261, 31: 0.268, 32: 0.276, 33: 0.283, 34: 0.29, 35: 0.298, 36: 0.305, 37: 0.312, 38: 0.319, 39: 0.326, 40: 0.333, 41: 0.34, 42: 0.346, 43: 0.353, 44: 0.36, 45: 0.366, 46: 0.373, 47: 0.379, 48: 0.386, 49: 0.392, 50: 0.399, 51: 0.405, 52: 0.411, 53: 0.417, 54: 0.423, 55: 0.429, 56: 0.435, 57: 0.441, 58: 0.447, 59: 0.453, 60: 0.458, 61: 0.464, 62: 0.47, 63: 0.475, 64: 0.481, 65: 0.486, 66: 0.492, 67: 0.497, 68: 0.503, 69: 0.508, 70: 0.513, 71: 0.518, 72: 0.523, 73: 0.528, 74: 0.533, 75: 0.538, 76: 0.543, 77: 0.548, 78: 0.553, 79: 0.558, 80: 0.563, 81: 0.568, 82: 0.572, 83: 0.577, 84: 0.581, 85: 0.586, 86: 0.591, 87: 0.595, 88: 0.599, 89: 0.604, 90: 0.608, 91: 0.612, 92: 0.617, 93: 0.621, 94: 0.625, 95: 0.629, 96: 0.633, 97: 0.638, 98: 0.642, 99: 0.646, 100: 0.65, 101: 0.654, 102: 0.657, 103: 0.661, 104: 0.665, 105: 0.669, 106: 0.673, 107: 0.676, 108: 0.68, 109: 0.684, 110: 0.687, 111: 0.691, 112: 0.694, 113: 0.698, 114: 0.701, 115: 0.705, 116: 0.708, 117: 0.712, 118: 0.715, 119: 0.718, 120: 0.722, 121: 0.725, 122: 0.728, 123: 0.731, 124: 0.735, 125: 0.738, 126: 0.741, 127: 0.744, 128: 0.747, 129: 0.75, 130: 0.753, 131: 0.756, 132: 0.759, 133: 0.762, 134: 0.765, 135: 0.768, 136: 0.771, 137: 0.773, 138: 0.776, 139: 0.779, 140: 0.782, 141: 0.784, 142: 0.787, 143: 0.79, 144: 0.792, 145: 0.795, 146: 0.798, 147: 0.8, 148: 0.803, 149: 0.805, 150: 0.808}
+        
 
 with open('powder_values.json', "r") as powder_file:
     powder_data = json.load(powder_file)
+with open('rough_spell_values.json', "r") as rough_spell_info_file:
+    rough_spell_data = json.load(rough_spell_info_file)
 
 def constrict(val, min_val, max_val):
         return max( min_val, min(val, max_val) )
     
 
 class Build:
-    def __init__(self):
+    def __init__(self, type_ = None, playstyle_ = None, attributes_ = None):
         self.build_data = {}
         self.build_stats = {}
         self.level = 101
         self.remaining_sp = (self.level - 1) * 2  # 200 sp
+        self.type = type_ 
+        self.playstyle = playstyle_
+        self.attributes = attributes_
+        if (not (self.type and self.playstyle and self.attributes)):
+            self.type = build_types.BuildTypes.SPELL
+            self.playstyle = build_types.BuildPlaystyles.LIGHT
+            self.attributes = build_types.BuildAttributes.OFFENSIVE
+            print("self default values for build")
 
     def __str__(self):
         gear_index = ["Helmet", "Chestplate", "Leggings",
@@ -53,6 +66,7 @@ class Build:
         for attr, value in self.build_stats.items():
             if value != 0:
                 output += f'{attr}: {value}\n'
+        # output += "----DAMAGE----\n"
         return output
 
     def add_item(self, item):
@@ -72,28 +86,38 @@ class Build:
     def set_weapon_powders(self, powders):
         self.build_data["Weapon"].set_powders(powders)
 
-    def get_powdered_dmg(self):
-        return self.build_data["Weapon"].calc_powdered_dmg()
+    def get_powdered_dmg(self, conversion):
+        return self.build_data["Weapon"].calc_powdered_dmg(conversion)
     
+    def calc_exact_dps(self):
+        print(self.calc_equip())
+        pass
+
     def calc_rough_dps(self): # calculates the rough dps of the build efficiently
         stats, weap_damage = self.calc_stats()
         spell_speed_mod = attack_speed_mod[stats["attackSpeed"]]
         melee_speed_mod = attack_speed_mod[constrict(stats["attackSpeed"] + stats['attackSpeedBonus'], 0, 6)]
-    
-        print(weap_damage)
-        sp_bonuses = {0: 0.0, 1: 0.01, 2: 0.02, 3: 0.029, 4: 0.039, 5: 0.049, 6: 0.058, 7: 0.067, 8: 0.077, 9: 0.086, 10: 0.095, 11: 0.104, 12: 0.113, 13: 0.122, 14: 0.131, 15: 0.139, 16: 0.148, 17: 0.157, 18: 0.165, 19: 0.173, 20: 0.182, 21: 0.19, 22: 0.198, 23: 0.206, 24: 0.214, 25: 0.222, 26: 0.23, 27: 0.238, 28: 0.246, 29: 0.253, 30: 0.261, 31: 0.268, 32: 0.276, 33: 0.283, 34: 0.29, 35: 0.298, 36: 0.305, 37: 0.312, 38: 0.319, 39: 0.326, 40: 0.333, 41: 0.34, 42: 0.346, 43: 0.353, 44: 0.36, 45: 0.366, 46: 0.373, 47: 0.379, 48: 0.386, 49: 0.392, 50: 0.399, 51: 0.405, 52: 0.411, 53: 0.417, 54: 0.423, 55: 0.429, 56: 0.435, 57: 0.441, 58: 0.447, 59: 0.453, 60: 0.458, 61: 0.464, 62: 0.47, 63: 0.475, 64: 0.481, 65: 0.486, 66: 0.492, 67: 0.497, 68: 0.503, 69: 0.508, 70: 0.513, 71: 0.518, 72: 0.523, 73: 0.528, 74: 0.533, 75: 0.538, 76: 0.543, 77: 0.548, 78: 0.553, 79: 0.558, 80: 0.563, 81: 0.568, 82: 0.572, 83: 0.577, 84: 0.581, 85: 0.586, 86: 0.591, 87: 0.595, 88: 0.599, 89: 0.604, 90: 0.608, 91: 0.612, 92: 0.617, 93: 0.621, 94: 0.625, 95: 0.629, 96: 0.633, 97: 0.638, 98: 0.642, 99: 0.646, 100: 0.65, 101: 0.654, 102: 0.657, 103: 0.661, 104: 0.665, 105: 0.669, 106: 0.673, 107: 0.676, 108: 0.68, 109: 0.684, 110: 0.687, 111: 0.691, 112: 0.694, 113: 0.698, 114: 0.701, 115: 0.705, 116: 0.708, 117: 0.712, 118: 0.715, 119: 0.718, 120: 0.722, 121: 0.725, 122: 0.728, 123: 0.731, 124: 0.735, 125: 0.738, 126: 0.741, 127: 0.744, 128: 0.747, 129: 0.75, 130: 0.753, 131: 0.756, 132: 0.759, 133: 0.762, 134: 0.765, 135: 0.768, 136: 0.771, 137: 0.773, 138: 0.776, 139: 0.779, 140: 0.782, 141: 0.784, 142: 0.787, 143: 0.79, 144: 0.792, 145: 0.795, 146: 0.798, 147: 0.8, 148: 0.803, 149: 0.805, 150: 0.808}
-        for skill in skill_req: 
-            assigned = stats[skill] + stats[skill + "Points"]
-            sp_bonuses[skill] = assigned
-            
+
+        print(stats)
         total_melee_dps = 0
         total_melee_hit = 0
-        for dmg_type, dmg_amount in weap_damage.items(): 
-            if dmg_type == "damage": # neutral damage;
-                multiplier = (1 + sp_bonuses[stats["dexterity"]]) + sp_bonuses[stats["strength"]] + (stats["damageBonus"] / 100)
-                total_melee_hit += dmg_amount[1] * multiplier + (stats["damageBonusRaw"] + max(stats["poison"] / 3, 0))
-                total_melee_dps += (dmg_amount[1] * multiplier + (stats["damageBonusRaw"] + max(stats["poison"] / 3, 0))) * melee_speed_mod
+        total_spell_hit = 0
+        weap_type_str = self.build_data["Weapon"].to_json()["type"]
+        spell_info = rough_spell_data[weap_type_str]
+        powdered_dmg = self.get_powdered_dmg(spell_info["conversion"])
+        
+        #print(powdered_dmg)
+        powdered_dmg = powdered_dmg[0]
 
+        for dmg_type, dmg_amount in powdered_dmg.items(): 
+        
+            if dmg_type == "damage": # neutral damage;
+                multiplier = (1 + sp_bonuses[stats["dexterityAssigned"]]) + sp_bonuses[stats["strengthAssigned"]] + (stats["damageBonus"] / 100)
+                total_melee_hit += dmg_amount[1] * multiplier + (stats["damageBonusRaw"] + max(stats["poison"] / 3, 0))
+                total_melee_dps += (dmg_amount[1] * multiplier + (stats["damageBonusRaw"])) * melee_speed_mod + max(stats["poison"] / 3, 0)
+
+                spell_multiplier = (1 + sp_bonuses[stats["dexterityAssigned"]]) + sp_bonuses[stats["strengthAssigned"]] + (stats["spellDamage"] / 100)
+                total_spell_hit += (dmg_amount[1] * spell_multiplier * spell_speed_mod * spell_info["spell_modifier"]) + stats["spellDamageRaw"] * spell_info["spell_modifier"]
             else: # elemental damage
                 sp_name = damagetype_to_sp[dmg_type]
                 sp_assigned = stats[sp_name + "Assigned"]
@@ -102,25 +126,33 @@ class Build:
                 
                 total_melee_hit += dmg_amount[1] * multiplier
                 total_melee_dps += dmg_amount[1] * multiplier * melee_speed_mod
-                print(sp_name, multiplier, "dex boost amount", ( sp_assigned ))
-        
-        for i in range(4):
-            if "multiplier" in spell_values[self.build_data["Weapon"]["type"].lower()][0]["parts"]:
-                spell_mult = spell_values[self.build_data["Weapon"]["type"].lower()][0]["parts"]["multiplier"]
-            else:
-                pass      
 
-        for dmg_type, dmg_amount in weap_damage.items():
-            pass
-            
+                spell_multiplier = (1 + sp_bonuses[stats["dexterityAssigned"]] + sp_bonuses[stats["strengthAssigned"]] + 
+                    + sp_bonuses[sp_assigned] + (stats["spellDamage"] + stats["bonus" + dmg_type.capitalize() + "Damage"])/100)
+                this_element_hit = dmg_amount[1] * spell_multiplier * spell_speed_mod * spell_info["spell_modifier"]
+                total_spell_hit += this_element_hit
+                #print(sp_name, spell_multiplier, "sp assigned", ( sp_assigned ), "this element hit", this_element_hit)
+        #print(spell_info)
+        spell_cost_pct = stats["spellCostPct" + str(spell_info["spell_num"])]
+        spell_cost_raw = stats["spellCostRaw" + str(spell_info["spell_num"])]
+        spell_cost = spell_info["cost"]
+        int_reduction = sp_bonuses[stats["intelligenceAssigned"]]
+        total_spell_cost = max(1, floor(ceil(spell_cost * (1 - int_reduction) + spell_cost_raw) * (1 + spell_cost_pct / 100)))
         
+
+        #print("pct",spell_cost_pct,"raw",spell_cost_raw,"spellcost:",spell_cost,"spellcostaftercalc",total_spell_cost)
+        # calculate the amount of spells that can be used in 1 cycle and divide by 4 (seconds)
+        spells_per_sec = min( ( 5 + 0.8 * min( stats["manaRegen"], 19 ) + max( stats["manaSteal"], 0 )) / total_spell_cost, 10 ) / 4  
+        total_spell_dps = total_spell_hit *  spells_per_sec
+
+        #print("spell_hit", total_spell_hit,  "spells per sec",spells_per_sec,"new spell dps",total_spell_dps,"mana regen:", stats["manaRegen"],"mana steal:",stats["manaSteal"])
 
         # print("Melee Hit:", total_melee_hit)
         # Melee dps = (base_dmg) * (str_bonus + melee_dmg% + ele% + sp_bonus%) * (speed_mod )
         # neutral = (base_dmg) * (str_bonus + melee_dmg%) * (speed_mod) + (raw melee) + max((poison / 3), 0)
 
 
-        return total_melee_dps
+        return total_melee_dps, total_spell_dps
 
     def calc_damages(self):  # calculate the damage of each spell
         pass
@@ -151,6 +183,7 @@ class Build:
 
         # print(self.build_stats)
 
+    # THIS IS CALLED BY calc_equip!!!!!!!!!!!!!!!
     def equip_build(self, gear_set, total_req, starting_sp):
         best_set_stats = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, 'assigned': 99999}
         for test_set in permutations(gear_set, len(gear_set)):
@@ -285,7 +318,9 @@ class Item:
         else:
             self.item_json["powders"] = powder_list  # If amount <= than supported on item, just applies adds them on
 
-    def calc_powdered_dmg(self, conversion_values=OrderedDict()):
+    def calc_powdered_dmg(self, conversion_values={}):
+        conversion_values = {x:y for x,y in conversion_values.items() if y!=0}
+        conversion_values = OrderedDict(conversion_values)
         if self.item_json["equipType"] == "Weapon":
             weapon_dmgs = copy.deepcopy(self.item_json["damages"])
             for powder in self.item_json["powders"]:
@@ -304,13 +339,14 @@ class Item:
                 else:  # if not, its regular
                     conversion_values[element] += conversion
                 weapon_dmgs[element] = self.add_lists(base, weapon_dmgs[element])
+            conversion_sum = sum(conversion_values.values())
             for convert_element, convert_value in conversion_values.items(): # use the calculated conversion values and update neutral and the element
                 convert_damage = self.multi_list_by_const(weapon_dmgs["damage"], convert_value)
-                new_neutral =   self.multi_list_by_const(weapon_dmgs["damage"], 1 - convert_value)
+                #new_neutral =   self.multi_list_by_const(weapon_dmgs["damage"], 1 - convert_value)
                 weapon_dmgs[convert_element] = self.add_lists(weapon_dmgs[convert_element], convert_damage)
-                weapon_dmgs["damage"] = new_neutral
-            # for dmg, dmg_list in weapon_dmgs.items(): # floor all values and recalculate the average
-            #     weapon_dmgs[dmg] = self.floor_recalculate_avg(dmg_list)
+            weapon_dmgs["damage"] = self.multi_list_by_const(weapon_dmgs["damage"], 1 - conversion_sum)
+            for dmg, dmg_list in weapon_dmgs.items(): # floor all values and recalculate the average
+                weapon_dmgs[dmg] = self.floor_recalculate_avg(dmg_list)
             return weapon_dmgs, conversion_values
         else:
             raise SyntaxError("tried to calculate powdered damage on armor piece")

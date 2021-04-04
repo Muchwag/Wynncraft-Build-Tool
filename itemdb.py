@@ -15,6 +15,8 @@ rollable_IDs = ['healthRegen', 'manaRegen', 'spellDamage', 'lifeSteal', 'manaSte
                      'spellCostPct1', 'spellCostRaw1', 'spellCostPct2',
                      'spellCostRaw2', 'spellCostPct3', 'spellCostRaw3', 'spellCostPct4', 'spellCostRaw4']
 
+reverse_IDs = ['spellCostPct1', 'spellCostRaw1', 'spellCostPct2', 'spellCostRaw2', 'spellCostPct3', 'spellCostRaw3', 'spellCostPct4', 'spellCostRaw4']
+
 class ItemDB:
     def __init__(self):
         self.all_items = {}
@@ -23,6 +25,9 @@ class ItemDB:
         if "displayName" in jsonObj: #"displayName" for renamed items
             jsonObj["name"] = jsonObj["displayName"]
             del jsonObj["displayName"]
+
+        if "identified" not in jsonObj: # Adding identified to ALL items (thx wynn api rlly coming in clutch)
+            jsonObj["identified"] = False
         
         try: #Accesory items have accessoryType instead of type so try is used
             if jsonObj['type'] in weapons:
@@ -37,15 +42,24 @@ class ItemDB:
         except:
             pass
         
-        if 'identified' not in jsonObj: # on items without fixed IDs turns base ID to max ID
+        if jsonObj['identified'] == False: # on items without fixed IDs turns base ID to max ID
             for attr in rollable_IDs:
-                try:
-                    if int(jsonObj[attr]) > 0:
-                        jsonObj[attr] = int(jsonObj[attr] * 1.3 + 0.5) # Python base rounding is banker's rounding, thus jank form
-                    if int(jsonObj[attr]) < 0:
-                        jsonObj[attr] = math.ceil(abs(jsonObj[attr] * 0.7 + 0.5)) * -1
-                except:
-                    pass
+                if attr in reverse_IDs:
+                    try:
+                        if int(jsonObj[attr]) > 0:
+                            jsonObj[attr] = int(jsonObj[attr] * 0.3 + 0.5) # Python base rounding is banker's rounding, thus jank form
+                        if int(jsonObj[attr]) < 0:
+                            jsonObj[attr] = math.ceil(abs(jsonObj[attr] * 1.3 + 0.5)) * -1
+                    except:
+                        pass
+                else:
+                    try:
+                        if int(jsonObj[attr]) > 0:
+                            jsonObj[attr] = int(jsonObj[attr] * 1.3 + 0.5)
+                        if int(jsonObj[attr]) < 0:
+                            jsonObj[attr] = math.ceil(abs(jsonObj[attr] * 0.7 + 0.5)) * -1
+                    except:
+                        pass
 
         if 'accessoryType' in jsonObj: # turns accessoryType values to type instead
             jsonObj['type'] = jsonObj['accessoryType']
