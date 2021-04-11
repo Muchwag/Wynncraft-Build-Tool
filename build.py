@@ -31,25 +31,32 @@ with open('powder_values.json', "r") as powder_file:
     powder_data = json.load(powder_file)
 with open('rough_spell_values.json', "r") as rough_spell_info_file:
     rough_spell_data = json.load(rough_spell_info_file)
+with open('set_bonus_values.json', "r") as set_bonus_file:
+    set_bonus_data = json.load(set_bonus_file)
+
+powder_file.close()
+rough_spell_info_file.close()
+set_bonus_file.close()
+
 
 def constrict(val, min_val, max_val):
         return max( min_val, min(val, max_val) )
     
 
 class Build:
-    def __init__(self, type_ = None, playstyle_ = None, attributes_ = None):
+    def __init__(self, type_ = None, playstyle_ = None, attribute_ = None):
         self.build_data = {}
         self.build_stats = {}
         self.level = 101
         self.remaining_sp = (self.level - 1) * 2  # 200 sp
         self.type = type_ 
         self.playstyle = playstyle_
-        self.attributes = attributes_
-        if (not (self.type and self.playstyle and self.attributes)):
+        self.attribute = attribute_
+        if (not (self.type and self.playstyle and self.attribute)):
             self.type = build_types.BuildTypes.SPELL
             self.playstyle = build_types.BuildPlaystyles.LIGHT
-            self.attributes = build_types.BuildAttributes.OFFENSIVE
-            print("self default values for build")
+            self.attribute = build_types.BuildAttributes.OFFENSIVE
+            print("set default values for build", self.type, self.playstyle, self.attribute)
 
     def __str__(self):
         gear_index = ["Helmet", "Chestplate", "Leggings",
@@ -93,8 +100,12 @@ class Build:
         print(self.calc_equip())
         pass
 
-    def calc_rough_dps(self): # calculates the rough dps of the build efficiently
-        stats, weap_damage = self.calc_stats()
+    def calc_dps(self, fast = True): # calculates the rough dps of the build efficiently
+        if (fast):
+            stats, weap_damage = self.calc_stats()
+        else:
+            stats = self.calc_equip()
+            print(stats) 
         spell_speed_mod = attack_speed_mod[stats["attackSpeed"]]
         melee_speed_mod = attack_speed_mod[constrict(stats["attackSpeed"] + stats['attackSpeedBonus'], 0, 6)]
 
@@ -186,6 +197,7 @@ class Build:
     # THIS IS CALLED BY calc_equip!!!!!!!!!!!!!!!
     def equip_build(self, gear_set, total_req, starting_sp):
         best_set_stats = {"strength": 0, "dexterity": 0, "intelligence": 0, "defense": 0, "agility": 0, 'assigned': 99999}
+        best_assigned = {}
         for test_set in permutations(gear_set, len(gear_set)):
             possible = True
             points = starting_sp
@@ -230,12 +242,13 @@ class Build:
             if points_sum < best_set_stats["assigned"] and self.remaining_sp - points_sum >= 0 and possible == True:
                 points['assigned'] = points_sum
                 best_set_stats = points.copy()    
+                best_assigned = assigned.copy()
         
         
         # weapon_json = self.build_data["Weapon"].to_json() # Add weapons sp to the final value
         # for skill in skill_req:
         #     best_set_stats[skill] += weapon_json[skill + "Points"]
-        
+        print({ **{ key + "Assigned" : value for key, value in best_assigned.items() }, **best_set_stats})
         return best_set_stats
         
     def get_build_req(self):
@@ -292,7 +305,11 @@ class Build:
         #print(total_req)
         #print(starting_sp)
         return self.equip_build(gear_set, total_req, starting_sp)
+    
 
+    def get_set_sp(self, gear_set):
+        
+        pass
 
 class Item:
     def __init__(self, itemjson):

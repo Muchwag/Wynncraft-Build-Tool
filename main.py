@@ -32,7 +32,7 @@ epic.add_item(itemdb.get_item("Third Eye"))
 epic.add_item(itemdb.get_item("Aquarius"))
 epic.add_item(itemdb.get_item("Lament"))
 #epic.set_weapon_powders(["w6","w6", "w6", "a6", "a6"])
-print(epic.calc_exact_dps())
+print(epic.calc_dps(fast = False))
 
 
 # #print(epic.calc_equip())
