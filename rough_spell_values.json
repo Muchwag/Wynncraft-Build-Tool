@@ -1,0 +1,65 @@
+{
+    "Wand":
+        {
+            "cost": 8,
+            "spell_num": 3,
+            "spell_modifier": 5,
+            "muchwag_level":  2,
+            "conversion": {
+                "earth": 0.3,
+                "thunder": 0,
+                "water": 0,
+                "fire": 0.3,
+                "air": 0}
+        },
+    "Dagger":
+        {
+            "cost": 6,
+            "spell_num": 1,
+            "spell_modifier": 1.5,
+            "conversion": {
+                "earth": 0,
+                "thunder": 0.3,
+                "water": 0,
+                "fire": 0,
+                "air": 0}
+        },
+    "Bow":
+        {
+            "cost": 8,
+            "spell_num": 3,
+            "spell_modifier": 2.5,
+            "conversion": {
+                "earth": 0.25,
+                "thunder": 0,
+                "water": 0,
+                "fire": 0.15,
+                "air": 0}
+        },
+    "Spear":
+        {
+            "cost": 9,
+            "spell_num": 3,
+            "spell_modifier": 4,
+            "conversion": {
+                "earth": 0.05,
+                "thunder": 0.175,
+                "water": 0,
+                "fire": 0,
+                "air": 0}
+        },
+    "Relik":
+        {
+            "cost": 8,
+            "spell_num": 3,
+            "spell_modifier": 2,
+            "conversion": {
+                "earth": 0,
+                "thunder": 0,
+                "water": 0.3,
+                "fire": 0,
+                "air": 0}
+        }
+
+
+}

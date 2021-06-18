@@ -1,0 +1,581 @@
+{
+    "wand": [
+        {
+            "title": "Heal",
+            "cost": 6,
+            "damageType": "HEAL",
+            "parts": [
+                {
+                    "type": "heal",
+                    "multiplier": 0.24,
+                    "ignore": false,
+                    "conversion": {
+                        "earth": 0,
+                        "thunder": 0,
+                        "water": 0,
+                        "fire": 0,
+                        "air": 0
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Teleport",
+            "cost": 4,
+            "damageType": "NORMAL",
+            "parts": [
+                {
+                    "type": "damage",
+                    "multiplier": 100,
+                    "ignore": false,
+                    "conversion": {
+                        "earth": 0,
+                        "thunder": 60,
+                        "water": 0,
+                        "fire": 0,
+                        "air": 0
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Meteor",
+            "cost": 8,
+            "damageType": "NORMAL",
+            "variants": {
+                "DEFAULT": {
+                    "parts": [
+                        {
+                            "subtitle": "Blast Damage",
+                            "type": "damage",
+                            "multiplier": 500,
+                            "ignore": false,
+                            "conversion": {
+                                "earth": 30,
+                                "thunder": 0,
+                                "water": 0,
+                                "fire": 30,
+                                "air": 0
+                            }
+                        },
+                        {
+                            "subtitle": "Burn Damage",
+                            "damageType": "damage",
+                            "multiplier": 125,
+                            "ignore": true,
+                            "conversion": {
+                                "earth": 30,
+                                "thunder": 0,
+                                "water": 0,
+                                "fire": 30,
+                                "air": 0}
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "title": "Ice Snake",
+            "damageType": "NORMAL",
+            "cost": 4,
+            "variants": {
+                "parts": [
+                    {
+                        "subtitle": "Total Damage",
+                        "type": "damage",
+                        "multiplier": 70,
+                        "ignore": false,
+                        "conversion": {
+                            "earth": 0,
+                            "thunder": 0,
+                            "water": 50,
+                            "fire": 0,
+                            "air": 0}
+                    }
+                ]
+            }
+        }
+    ],
+    "spear": [
+        {
+            "title": "Bash",
+            "damageType": "NORMAL",
+            "cost": 6,
+            "variants": {
+                    "parts": [
+                    {
+                        "subtitle": "First Damage",
+                        "type": "damage",
+                        "multiplier": 130,
+                        "ignore": false,
+                        "conversion": {
+                            "earth": 40,
+                            "thunder": 0,
+                            "water": 0,
+                            "fire": 0,
+                            "air": 0}
+                    },
+                    {
+                        "subtitle": "Explosion Damage",
+                        "type": "damage",
+                        "multiplier": 130,
+                        "ignore": false,
+                        "conversion": {
+                            "earth": 0,
+                            "thunder": 0,
+                            "water": 0,
+                            "fire": 0,
+                            "air": 0}
+                    }
+                ]
+            }
+        },
+        {
+            "title": "Charge",
+            "cost": 4,
+            "damageType": "NORMAL",
+            "variants": {
+                "DEFAULT": [
+                    {
+                        "subtitle": "Total Damage",
+                        "type": "damage",
+                        "multiplier": 150,
+                        "conversion": {
+                            "fire": 40
+                        },
+                        "summary": true
+                    }
+                ],
+                "RALLY": [
+                    {
+                        "subtitle": "Self Heal",
+                        "type": "heal",
+                        "strength": 0.1,
+                        "summary": true
+                    },
+                    {
+                        "subtitle": "Ally Heal",
+                        "type": "heal",
+                        "strength": 0.15
+                    }
+                ]
+            }
+        },
+        {
+            "title": "Uppercut",
+            "cost": 9,
+            "parts": [
+                {
+                    "subtitle": "First Damage",
+                    "type": "damage",
+                    "multiplier": 300,
+                    "conversion": {
+                        "earth": 20,
+                        "thunder": 10
+                    }
+                },
+                {
+                    "subtitle": "Fireworks Damage",
+                    "type": "damage",
+                    "multiplier": 50,
+                    "conversion": {
+                        "thunder": 40
+                    }
+                },
+                {
+                    "subtitle": "Crash Damage",
+                    "type": "damage",
+                    "multiplier": 50,
+                    "conversion": {
+                        "thunder": 20
+                    }
+                },
+                {
+                    "subtitle": "Total Damage",
+                    "type": "total",
+                    "factors": [
+                        1,
+                        1,
+                        1
+                    ],
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "War Scream",
+            "cost": 6,
+            "parts": [
+                {
+                    "subtitle": "Area Damage",
+                    "type": "damage",
+                    "multiplier": 50,
+                    "conversion": {
+                        "fire": 75,
+                        "air": 25
+                    },
+                    "summary": true
+                },
+                {
+                    "subtitle": "Air Shout (Per Hit)",
+                    "type": "damage",
+                    "multiplier": 30,
+                    "conversion": {
+                        "fire": 75,
+                        "air": 25
+                    }
+                }
+            ]
+        }
+    ],
+    "bow": [
+        {
+            "title": "Arrow Storm",
+            "cost": 6,
+            "variants": {
+                "DEFAULT": [
+                    {
+                        "subtitle": "Total Damage",
+                        "type": "damage",
+                        "multiplier": 600,
+                        "conversion": {
+                            "thunder": 25,
+                            "fire": 15
+                        },
+                        "summary": true
+                    },
+                    {
+                        "subtitle": "Per Arrow (60)",
+                        "type": "damage",
+                        "multiplier": 10,
+                        "conversion": {
+                            "thunder": 25,
+                            "fire": 15
+                        }
+                    }
+                ],
+                "HAWKEYE": [
+                    {
+                        "subtitle": "Total Damage (Hawkeye)",
+                        "type": "damage",
+                        "multiplier": 400,
+                        "conversion": {
+                            "thunder": 25,
+                            "fire": 15
+                        },
+                        "summary": true
+                    },
+                    {
+                        "subtitle": "Per Arrow (5)",
+                        "type": "damage",
+                        "multiplier": 80,
+                        "conversion": {
+                            "thunder": 25,
+                            "fire": 15
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "title": "Escape",
+            "cost": 3,
+            "parts": [
+                {
+                    "subtitle": "Landing Damage",
+                    "type": "damage",
+                    "multiplier": 100,
+                    "conversion": {
+                        "air": 50
+                    },
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Bomb Arrow",
+            "cost": 8,
+            "parts": [
+                {
+                    "subtitle": "Total Damage",
+                    "type": "damage",
+                    "multiplier": 250,
+                    "conversion": {
+                        "earth": 25,
+                        "fire": 15
+                    },
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Arrow Shield",
+            "cost": 10,
+            "parts": [
+                {
+                    "subtitle": "Shield Damage",
+                    "type": "damage",
+                    "multiplier": 100,
+                    "conversion": {
+                        "air": 30
+                    },
+                    "summary": true
+                },
+                {
+                    "subtitle": "Arrow Rain Damage",
+                    "type": "damage",
+                    "multiplier": 200,
+                    "conversion": {
+                        "air": 30
+                    }
+                }
+            ]
+        }
+    ],
+    "dagger": [
+        {
+            "title": "Spin Attack",
+            "cost": 6,
+            "parts": [
+                {
+                    "subtitle": "Total Damage",
+                    "type": "damage",
+                    "multiplier": 150,
+                    "conversion": {
+                        "thunder": 30
+                    },
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Vanish",
+            "cost": 2,
+            "parts": [
+                {
+                    "subtitle": "No Damage",
+                    "type": "none",
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Multihit",
+            "cost": 8,
+            "parts": [
+                {
+                    "subtitle": "1st to 10th Hit",
+                    "type": "damage",
+                    "multiplier": 27,
+                    "conversion": {}
+                },
+                {
+                    "subtitle": "Fatality",
+                    "type": "damage",
+                    "multiplier": 120,
+                    "conversion": {
+                        "thunder": 30,
+                        "water": 50
+                    }
+                },
+                {
+                    "subtitle": "Total Damage",
+                    "type": "total",
+                    "factors": [
+                        10,
+                        1
+                    ],
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Smoke Bomb",
+            "cost": 8,
+            "variants": {
+                "DEFAULT": [
+                    {
+                        "subtitle": "Tick Damage (10 max)",
+                        "type": "damage",
+                        "multiplier": 60,
+                        "conversion": {
+                            "earth": 25,
+                            "air": 25
+                        }
+                    },
+                    {
+                        "subtitle": "Total Damage",
+                        "type": "damage",
+                        "multiplier": 600,
+                        "conversion": {
+                            "earth": 25,
+                            "air": 25
+                        },
+                        "summary": true
+                    }
+                ],
+                "CHERRY_BOMBS": [
+                    {
+                        "subtitle": "Total Damage (Cherry Bombs)",
+                        "type": "damage",
+                        "multiplier": 330,
+                        "conversion": {
+                            "earth": 25,
+                            "air": 25
+                        },
+                        "summary": true
+                    },
+                    {
+                        "subtitle": "Per Bomb",
+                        "type": "damage",
+                        "multiplier": 110,
+                        "conversion": {
+                            "earth": 25,
+                            "air": 25
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "relik": [
+        {
+            "title": "Totem",
+            "cost": 4,
+            "parts": [
+                {
+                    "subtitle": "Smash Damage",
+                    "type": "damage",
+                    "multiplier": 100,
+                    "conversion": {
+                        "fire": 20
+                    }
+                },
+                {
+                    "subtitle": "Damage Tick",
+                    "type": "damage",
+                    "multiplier": 20,
+                    "conversion": {
+                        "air": 20
+                    }
+                },
+                {
+                    "subtitle": "Heal Tick",
+                    "type": "heal",
+                    "strength": 0.03,
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Haul",
+            "cost": 1,
+            "parts": [
+                {
+                    "subtitle": "Total Damage",
+                    "type": "damage",
+                    "multiplier": 100,
+                    "conversion": {
+                        "thunder": 20
+                    },
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Aura",
+            "cost": 8,
+            "parts": [
+                {
+                    "subtitle": "One Wave",
+                    "type": "damage",
+                    "multiplier": 200,
+                    "conversion": {
+                        "water": 30
+                    },
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Uproot",
+            "cost": 6,
+            "parts": [
+                {
+                    "subtitle": "Total Damage",
+                    "type": "damage",
+                    "multiplier": 100,
+                    "conversion": {
+                        "earth": 30
+                    },
+                    "summary": true
+                }
+            ]
+        }
+    ],
+    "powder": [
+        {
+            "title": "Quake",
+            "cost": 0,
+            "parts": [
+                {
+                    "subtitle": "Total Damage",
+                    "type": "damage",
+                    "multiplier": [
+                        155,
+                        220,
+                        285,
+                        350,
+                        415
+                    ],
+                    "conversion": {
+                        "earth": 100
+                    },
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Chain Lightning",
+            "cost": 0,
+            "parts": [
+                {
+                    "subtitle": "Total Damage",
+                    "type": "damage",
+                    "multiplier": [
+                        200,
+                        225,
+                        250,
+                        275,
+                        300
+                    ],
+                    "conversion": {
+                        "thunder": 100
+                    },
+                    "summary": true
+                }
+            ]
+        },
+        {
+            "title": "Courage",
+            "cost": 0,
+            "parts": [
+                {
+                    "subtitle": "Total Damage",
+                    "type": "damage",
+                    "multiplier": [
+                        75,
+                        87.5,
+                        100,
+                        112.5,
+                        125
+                    ],
+                    "conversion": {
+                        "fire": 100
+                    },
+                    "summary": true
+                }
+            ]
+        }
+    ]
+}
